@@ -90,7 +90,7 @@
   <!-- Hero Section -->
   <div class="hero">
     <h1 class="animate__animated animate__fadeInDown">Disaster Relief Resource Tracker</h1>
-    <p class="lead animate__animated animate__fadeInUp">Crowdsourced help during floods, earthquakes, and other emergencies</p>
+    <p class="lead animate__animated animate__fadeInUp">Crowd sourced help during floods, earthquakes, and other emergencies</p>
     <div class="d-flex justify-content-center flex-wrap mt-4 animate__animated animate__fadeInUp">
       <a href="victim/request_form.php" class="btn btn-danger btn-lg m-2">Request Help</a>
     </div>
