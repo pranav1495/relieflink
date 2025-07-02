@@ -43,7 +43,7 @@
     }
 
     .stats-box {
-      background: #f8f9fa;
+      background:rgb(163, 209, 255);
       padding: 2rem;
       border-radius: 1rem;
       text-align: center;
@@ -81,12 +81,19 @@
         padding: 0.6rem 1.2rem;
       }
     }
+
+    /* Footer Styling */
+    footer a.text-white:hover {
+      text-decoration: underline;
+      color: #ffc107;
+    }
   </style>
 </head>
 <body>
 
  <!-- Include Navbar -->
   <?php include('navbar.php'); ?>
+
   <!-- Hero Section -->
   <div class="hero">
     <h1 class="animate__animated animate__fadeInDown">Disaster Relief Resource Tracker</h1>
@@ -122,6 +129,45 @@
 
   <!-- Back to Top Button -->
   <a href="#" class="btn btn-primary btn-lg back-to-top">↑</a>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-white pt-4 pb-3">
+    <div class="container text-center text-md-left">
+      <div class="row">
+        <!-- About -->
+        <div class="col-md-4 mb-3">
+          <h5>About ReliefLink</h5>
+          <p>
+            ReliefLink is a disaster relief resource tracker built to connect victims, volunteers, and administrators to streamline emergency response efforts.
+          </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="col-md-4 mb-3">
+          <h5>Quick Links</h5>
+          <ul class="list-unstyled">
+            <li><a href="index.php" class="text-white">Home</a></li>
+            <li><a href="victim/request_form.php" class="text-white">Request Help</a></li>
+            <li><a href="http://localhost/ReliefLink/user/login.php" class="text-white">Volunteer Login</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="col-md-4 mb-3">
+          <h5>Contact Us</h5>
+          <p>Email: relieflink.contact@gmail.com</p>
+          <p>Phone: +91 98765 43210</p>
+          <p>Location: Disaster Management HQ, Kerala, India</p>
+        </div>
+      </div>
+
+      <hr class="bg-light">
+
+      <div class="text-center">
+        <p class="mb-0">&copy; 2025 Team Relief-Link. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
 
   <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

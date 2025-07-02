@@ -75,6 +75,10 @@ if (!empty($data['approved_by']) && $data['approved_by'] !== $username) {
       color: #555;
       margin-bottom: 20px;
     }
+    .meta a {
+      color: #0d6efd;
+      text-decoration: underline;
+    }
     .message-body {
       white-space: pre-wrap;
       border-top: 1px solid #ddd;
@@ -115,7 +119,7 @@ if (!empty($data['approved_by']) && $data['approved_by'] !== $username) {
     <h4>🆘 Help Request from <?= htmlspecialchars($data['name']) ?></h4>
     <div class="meta">
       <strong>Email:</strong> <?= htmlspecialchars($data['email']) ?> |
-      <strong>Phone:</strong> <?= htmlspecialchars($data['phone']) ?> |
+      <strong>Phone:</strong> <a href="tel:<?= htmlspecialchars($data['phone']) ?>"><?= htmlspecialchars($data['phone']) ?></a> |
       <strong>Location:</strong> <?= htmlspecialchars($data['location']) ?>
     </div>
     <div class="meta">

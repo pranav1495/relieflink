@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 02, 2025 at 07:53 AM
+-- Generation Time: Jul 02, 2025 at 04:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -141,7 +141,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `photo`, `password_hash`, `role`, `created_at`, `full_name`, `email`, `phone`, `address`, `status`) VALUES
 (1, 'admin', NULL, '$2y$10$hDD5IBaKjK.GZXclPe1gVepdihM3mMjgC/SR4Y2uWTAn9GM8zr2km', 'admin', '2025-07-01 13:08:42', NULL, NULL, NULL, NULL, 1),
 (4, 'akash123', 'volunteers/akash.jpg', '$2y$10$Qwhx8mYe7EWY6mT9z7Z/9.09R.ooQwfnk/7E4u2vFvlPGR4pwIrsm', 'volunteer', '2025-07-01 13:23:23', 'Akash B', 'akashb@example.com', '9876543210', 'Kottayam, Kerala', 1),
-(5, 'pranav123', 'D-7254.jpg', '$2y$10$wLek96bEMZsxbxuUxFsa1OLL2p.gAFACZh0O1wDYi97lQbS8plqP.', 'volunteer', '2025-07-01 16:01:28', 'Pranav Eswar', 'pranav123@gmail.com', '9074261433', 'Tvm,Kerala', 0),
+(5, 'pranav123', 'D-7254.jpg', '$2y$10$wLek96bEMZsxbxuUxFsa1OLL2p.gAFACZh0O1wDYi97lQbS8plqP.', 'volunteer', '2025-07-01 16:01:28', 'Pranav Eswar', 'pranavartist1@gmail.com', '9074261433', 'Tvm,Kerala', 0),
 (6, 'sheeba123', 'sneha1.jpg', '$2y$10$Ju/Gv0.AGBBtAOaKD./t1uF8rwEtslYMMtEhoq3lYqgcym0urwvfK', 'volunteer', '2025-07-02 05:37:58', 'Sheeba', 'sheeba123@gmail.com', '9945873465', NULL, 0);
 
 -- --------------------------------------------------------
@@ -195,7 +195,8 @@ CREATE TABLE `victims` (
 --
 
 INSERT INTO `victims` (`id`, `name`, `phone`, `email`, `location`, `need`, `status`, `approved_by`, `created_at`, `viewed_by`) VALUES
-(6, 'Tinu', '9939489744', 'tinu123@gmail.com', 'Tvm', 'Help', 1, 'sheeba123', '2025-07-02 05:19:52', NULL);
+(6, 'Tinu', '9939489744', 'tinu123@gmail.com', 'Tvm', 'Help', 1, 'sheeba123', '2025-07-02 05:19:52', NULL),
+(7, 'soman', '7436890346', 'soman123@gmail.com', 'Kattakada', 'Food', 1, 'pranav123', '2025-07-02 14:07:11', NULL);
 
 -- --------------------------------------------------------
 
@@ -313,7 +314,7 @@ ALTER TABLE `venquiry`
 -- AUTO_INCREMENT for table `victims`
 --
 ALTER TABLE `victims`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `victim_requests`
