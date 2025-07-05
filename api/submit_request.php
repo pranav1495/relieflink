@@ -16,26 +16,51 @@ $phone    = trim($_POST['phone'] ?? '');
 $location = trim($_POST['location'] ?? '');
 $need     = trim($_POST['need'] ?? '');
 
-// Check for required fields
+// Check required fields
 if (!$name || !$email || !$phone || !$location || !$need) {
     http_response_code(400);
     echo json_encode(["status" => "error", "message" => "All fields are required."]);
     exit();
 }
 
-// Optionally validate email format
+// Validate email
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     http_response_code(400);
     echo json_encode(["status" => "error", "message" => "Invalid email format."]);
     exit();
 }
 
-// Prepare and execute insert statement
+// Handle photo upload
+$photoName = null;
+if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    $tmpName = $_FILES['photo']['tmp_name'];
+    $originalName = $_FILES['photo']['name'];
+    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+    // Allowed image types
+    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+    if (!in_array($extension, $allowedTypes)) {
+        http_response_code(400);
+        echo json_encode(["status" => "error", "message" => "Only JPG, PNG, and GIF files are allowed."]);
+        exit();
+    }
+
+    // Rename file and move
+    $photoName = uniqid("victim_", true) . "." . $extension;
+    $uploadPath = __DIR__ . '/../uploads/' . $photoName;
+    if (!move_uploaded_file($tmpName, $uploadPath)) {
+        http_response_code(500);
+        echo json_encode(["status" => "error", "message" => "Failed to upload image."]);
+        exit();
+    }
+}
+
+// Insert into DB
 $stmt = $conn->prepare(
-    "INSERT INTO victims (name, email, phone, location, need, status) 
-     VALUES (?, ?, ?, ?, ?, 0)" // 0 = Pending
+    "INSERT INTO victims (name, email, phone, location, need, photo, status) 
+     VALUES (?, ?, ?, ?, ?, ?, 0)"
 );
-$stmt->bind_param("sssss", $name, $email, $phone, $location, $need);
+$stmt->bind_param("ssssss", $name, $email, $phone, $location, $need, $photoName);
 
 if (!$stmt->execute()) {
     http_response_code(500);
@@ -45,7 +70,7 @@ if (!$stmt->execute()) {
     exit();
 }
 
-// Send email notifications to volunteers
+// Email all volunteers
 $volunteers = $conn->query("SELECT email FROM users WHERE role = 'volunteer' AND email IS NOT NULL");
 
 $subject = "🚨 Emergency Help Request";
@@ -70,7 +95,7 @@ while ($vol = $volunteers->fetch_assoc()) {
     @mail($vol['email'], $subject, $message, $headers);
 }
 
-// Respond success
+// Response
 echo json_encode(["status" => "success", "message" => "Request submitted and emails sent."]);
 
 $stmt->close();
