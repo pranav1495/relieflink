@@ -182,15 +182,18 @@ while ($row = $result->fetch_assoc()) {
 <body>
   <div class="dashboard-container">
     <!-- Sidebar -->
-    <div class="sidebar">
-      <h4>
-        <img src="../assets/images/logo.png" alt="Logo" class="logo-img">
-        Relief-Link
-      </h4>
-      <a href="admin/volunteers.php"><i class="fas fa-users me-2"></i>Volunteers</a>
-      <a href="admin/resources.php"><i class="fas fa-boxes me-2"></i>Resources</a>
-      <a href="admin/reports.php"><i class="fas fa-chart-line me-2"></i>Reports</a>
-    </div>
+    <!-- Sidebar -->
+<div class="sidebar">
+  <h4>
+    <img src="../assets/images/logo.png" alt="Logo" class="logo-img">
+    Relief-Link
+  </h4>
+  <a href="admin/volunteers.php"><i class="fas fa-users me-2"></i>Volunteers</a>
+  <a href="admin/resources.php"><i class="fas fa-boxes me-2"></i>Resources</a>
+  <a href="admin/public.php"><i class="fas fa-user-friends me-2"></i>Public's</a> <!-- Newly added here -->
+  <a href="admin/reports.php"><i class="fas fa-chart-line me-2"></i>Reports</a>
+</div>
+
 
     <!-- Main Content -->
     <div class="main-content">

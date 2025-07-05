@@ -156,7 +156,7 @@
         <div class="col-md-4 mb-3">
           <h5>Contact Us</h5>
           <p>Email: relieflink.contact@gmail.com</p>
-          <p>Phone: +91 98765 43210</p>
+          <p>Phone: +91 90742 61433</p>
           <p>Location: Disaster Management HQ, Kerala, India</p>
         </div>
       </div>
@@ -164,7 +164,7 @@
       <hr class="bg-light">
 
       <div class="text-center">
-        <p class="mb-0">&copy; 2025 Team Relief-Link. All Rights Reserved.</p>
+        <p class="mb-0">&copy; Developed by 2025 Team Relief-Link. All Rights Reserved.</p>
       </div>
     </div>
   </footer>

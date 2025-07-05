@@ -246,6 +246,13 @@ while ($row = $result->fetch_assoc()) {
       </div>
     </form>
   </div>
+
+  <!-- Volunteer Chat Panel -->
+  <div class="glass-card text-center">
+    <h5 class="text-primary">👥 Open Public-Volunteer Chat</h5>
+    <p>Chat with registered public users directly.</p>
+    <a href="chat_with_public.php" class="btn btn-outline-primary">Open Chat Panel</a>
+  </div>
 </div>
 
 <script src="../assets/js/bootstrap.bundle.min.js"></script>

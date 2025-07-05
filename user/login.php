@@ -6,6 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
     $password = $_POST['password'];
 
+    // Check in users table (admin/volunteer)
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -26,10 +27,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = "❌ Incorrect password.";
         }
     } else {
-        $error = "❌ User not found.";
+        // Check in public_users table
+        $stmt = $conn->prepare("SELECT * FROM public_users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $public = $result->fetch_assoc();
+
+        if ($public && password_verify($password, $public['password'])) {
+            $_SESSION['public_username'] = $public['username'];
+            header("Location: ../user/public/public_dashboard.php");
+            exit();
+        } else {
+            $error = "❌ User not found.";
+        }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,13 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
   <style>
     body {
-  background: url('../assets/images/bgg.jpg') no-repeat center center fixed;
-  background-size: cover;
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
+      background: url('../assets/images/bgg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
     .login-box {
       backdrop-filter: blur(12px);
@@ -134,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #0d6efd, #0dcaf0);
+      background: linear-gradient(135deg, #0d6efd,rgb(42, 214, 249));
       border: none;
       border-radius: 12px;
       padding: 0.6rem;
@@ -199,8 +213,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="password" name="password" class="form-control" placeholder="Password" required>
       </div>
       <button type="submit" class="btn btn-primary w-100">Login</button>
+
       <div class="mt-3 text-center">
-        <a href="../index.php" class="text-decoration-none text-secondary">← Back to Home</a>
+        <a href="../index.php" class="text-decoration-none text-secondary">← Back to Home</a><br>
+       <div class="mt-3 text-center">
+  <span style="color: rgba(255, 255, 255, 0.9); font-weight: 500;">New here? Register as:</span><br>
+  <a href="../user/public/public_register.php"
+     class="text-decoration-none me-3"
+     style="color: #ffffff; font-weight: 500;"
+     onmouseover="this.style.color='#00ffd5';"
+     onmouseout="this.style.color='#ffffff';">
+     👤 Public User
+  </a>
+  |
+  <a href="../user/add_volunteer.php"
+     class="text-decoration-none ms-3"
+     style="color: #ffffff; font-weight: 500;"
+     onmouseover="this.style.color='#00ffd5';"
+     onmouseout="this.style.color='#ffffff';">
+     🤝 Volunteer
+  </a>
+</div>
+
+
       </div>
     </form>
   </div>

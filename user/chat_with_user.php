@@ -1,164 +1,120 @@
 <?php
 session_start();
+include __DIR__ . '/../config/db.php';
+
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'volunteer') {
     header("Location: ../auth/login.php");
     exit();
 }
 
-include '../config/db.php';
-
-$currentUser = $_SESSION['username'];
-$chatUser = $_GET['user'] ?? null;
-
-if (!$chatUser || $chatUser === $currentUser) {
-    die("Invalid chat user.");
+if (!isset($_GET['username'])) {
+    echo "❌ Public user username not specified.";
+    exit();
 }
 
-// Get chat user details
-$userStmt = $conn->prepare("SELECT full_name, photo FROM users WHERE username = ?");
-$userStmt->bind_param("s", $chatUser);
-$userStmt->execute();
-$userRes = $userStmt->get_result();
-$chatUserData = $userRes->fetch_assoc();
-$chatPhoto = $chatUserData['photo'] ?? 'default.jpg';
-$chatName = $chatUserData['full_name'] ?? $chatUser;
-
-// Fetch messages between users
-$msgStmt = $conn->prepare("SELECT * FROM messages 
-    WHERE (sender_username = ? AND receiver_username = ?) 
-       OR (sender_username = ? AND receiver_username = ?) 
-    ORDER BY sent_at ASC");
-$msgStmt->bind_param("ssss", $currentUser, $chatUser, $chatUser, $currentUser);
-$msgStmt->execute();
-$msgResult = $msgStmt->get_result();
-$messages = [];
-while ($row = $msgResult->fetch_assoc()) {
-    $messages[] = $row;
-}
+$publicUser = $_GET['username'];
+$volunteer = $_SESSION['username'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Chat with <?= htmlspecialchars($chatName) ?></title>
+  <title>Chat with Public User - <?= htmlspecialchars($publicUser) ?></title>
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
-    body {
-      margin: 0;
-      background-color: #000;
-      color: white;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    .topbar {
-      background-color: #198754;
+    .chat-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
       padding: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
-
-    .chat-avatar {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #fff;
-    }
-
-    .chat-area {
-      padding: 20px;
-      height: 75vh;
+      height: 320px;
       overflow-y: auto;
-      background-color: #121212;
-      border-top: 1px solid #333;
-      border-bottom: 1px solid #333;
+      background-color: #f8f9fa;
+      margin-bottom: 1rem;
     }
 
-    .msg-bubble {
-      max-width: 60%;
-      padding: 12px;
-      border-radius: 15px;
-      margin: 10px 0;
-      position: relative;
-      font-size: 0.95rem;
-      word-wrap: break-word;
-      background-color: #2e2e2e;
-      color: white;
+    .chat-msg {
+      margin-bottom: 10px;
     }
 
-    .msg-bubble.you {
-      background-color: #008000;
-      margin-left: auto;
-      text-align: left;
+    .chat-msg strong {
+      color: #198754;
     }
 
-    .msg-bubble small {
-      position: absolute;
-      bottom: -16px;
-      right: 8px;
-      font-size: 0.7rem;
-      color: #ccc;
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
     }
 
-    .chat-input {
-      padding: 15px;
-      background-color: #0f0f0f;
-    }
-
-    .chat-input input {
-      border-radius: 10px 0 0 10px;
-    }
-
-    .chat-input button {
-      border-radius: 0 10px 10px 0;
-    }
-
-    a.back-btn {
-      color: white;
-      text-decoration: none;
-      font-size: 1.2rem;
-      margin-left: auto;
-    }
-
-    @media (max-width: 768px) {
-      .msg-bubble {
-        max-width: 85%;
-      }
+    .clear-form {
+      display: inline;
     }
   </style>
 </head>
-<body>
+<body class="p-4">
+  <div class="container">
+    <div class="top-bar">
+      <h4>💬 Chat with Public User: <strong><?= htmlspecialchars($publicUser) ?></strong></h4>
+      <form action="clear_chat.php" method="POST" onsubmit="return confirm('Are you sure you want to clear the chat with <?= $publicUser ?>?');" class="clear-form">
+        <input type="hidden" name="volunteer" value="<?= $volunteer ?>">
+        <input type="hidden" name="public_user" value="<?= $publicUser ?>">
+        <button type="submit" class="btn btn-danger btn-sm">🗑️ Clear Chat</button>
+      </form>
+    </div>
 
-<div class="topbar">
-  <img src="../assets/images/<?= htmlspecialchars($chatPhoto) ?>" class="chat-avatar">
-  <h5 class="mb-0"><?= htmlspecialchars($chatName) ?></h5>
-  <a href="chat_list.php" class="back-btn ms-auto">&larr; Back</a>
-</div>
+    <!-- Chat Box -->
+    <div class="chat-box" id="chat-box">
+      <?php
+        $stmt = $conn->prepare("SELECT * FROM messages WHERE (sender_username=? AND receiver_username=?) OR (sender_username=? AND receiver_username=?) ORDER BY sent_at ASC");
+        $stmt->bind_param("ssss", $volunteer, $publicUser, $publicUser, $volunteer);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-<div class="chat-area" id="chatArea">
-  <?php if (empty($messages)): ?>
-    <p class="text-center text-muted">No messages yet.</p>
-  <?php else: ?>
-    <?php foreach ($messages as $msg): ?>
-      <div class="msg-bubble <?= $msg['sender_username'] === $currentUser ? 'you' : '' ?>">
-        <?= htmlspecialchars($msg['message']) ?>
-        <small><?= date("h:i A", strtotime($msg['sent_at'])) ?></small>
+        if ($result->num_rows === 0) {
+          echo "<p class='text-muted'>No messages yet.</p>";
+        }
+
+        while ($msg = $result->fetch_assoc()) {
+          echo "<div class='chat-msg'><strong>" . htmlspecialchars($msg['sender_username']) . ":</strong> " . htmlspecialchars($msg['message']) . "</div>";
+        }
+      ?>
+    </div>
+
+    <!-- Send Message Form -->
+    <form method="post" action="send_messages.php" id="sendForm">
+      <input type="hidden" name="receiver" value="<?= htmlspecialchars($publicUser) ?>">
+      <div class="input-group">
+        <input type="text" name="message" class="form-control" placeholder="Type your message..." required>
+        <button type="submit" class="btn btn-success">Send</button>
       </div>
-    <?php endforeach; ?>
-  <?php endif; ?>
-</div>
+    </form>
 
-<form class="chat-input d-flex" action="send_messages.php" method="POST">
-  <input type="hidden" name="receiver" value="<?= htmlspecialchars($chatUser) ?>">
-  <input type="text" name="message" class="form-control" placeholder="Type a message..." required>
-  <button type="submit" class="btn btn-success">Send</button>
-</form>
+    <div class="mt-3">
+      <a href="chat_list.php" class="btn btn-secondary">← Back</a>
+    </div>
+  </div>
 
-<script>
-  const chatArea = document.getElementById('chatArea');
-  chatArea.scrollTop = chatArea.scrollHeight;
-</script>
+  <!-- AJAX Script -->
+  <script>
+    $('#sendForm').on('submit', function(e) {
+      e.preventDefault();
+
+      const form = $(this);
+      const message = form.find('input[name="message"]').val();
+
+      $.post(form.attr('action'), form.serialize(), function() {
+        const msgHtml = `
+          <div class="chat-msg"><strong>volunteer:</strong> ${$('<div>').text(message).html()}</div>
+        `;
+        $('#chat-box').append(msgHtml);
+        $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+        form[0].reset();
+      }).fail(function() {
+        alert("❌ Failed to send message.");
+      });
+    });
+  </script>
 </body>
 </html>

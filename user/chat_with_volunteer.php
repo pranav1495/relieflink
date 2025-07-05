@@ -15,13 +15,13 @@ if (!isset($_GET['username'])) {
 $volunteer = $_GET['username'];
 $admin = $_SESSION['username'];
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Chat with Volunteer - <?= htmlspecialchars($volunteer) ?></title>
   <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     .chat-box {
       border: 1px solid #ccc;
@@ -64,14 +64,8 @@ $admin = $_SESSION['username'];
       </form>
     </div>
 
-    <!-- Flash Message -->
-    <?php if (isset($_SESSION['chat_notice'])): ?>
-      <div class="alert alert-info"><?= $_SESSION['chat_notice'] ?></div>
-      <?php unset($_SESSION['chat_notice']); ?>
-    <?php endif; ?>
-
     <!-- Chat Box -->
-    <div class="chat-box">
+    <div class="chat-box" id="chat-box">
       <?php
         $stmt = $conn->prepare("SELECT * FROM messages WHERE (sender_username=? AND receiver_username=?) OR (sender_username=? AND receiver_username=?) ORDER BY sent_at ASC");
         $stmt->bind_param("ssss", $admin, $volunteer, $volunteer, $admin);
@@ -88,8 +82,8 @@ $admin = $_SESSION['username'];
       ?>
     </div>
 
-    <!-- Send Message -->
-    <form method="post" action="send_messages.php">
+    <!-- Send Message Form -->
+    <form method="post" action="send_messages.php" id="sendForm">
       <input type="hidden" name="receiver" value="<?= htmlspecialchars($volunteer) ?>">
       <div class="input-group">
         <input type="text" name="message" class="form-control" placeholder="Type your message..." required>
@@ -101,5 +95,27 @@ $admin = $_SESSION['username'];
       <a href="http://localhost/ReliefLink/user/admin/volunteers.php" class="btn btn-secondary">← Back</a>
     </div>
   </div>
+
+  <!-- AJAX Script -->
+  <script>
+    $('#sendForm').on('submit', function(e) {
+      e.preventDefault();
+
+      const form = $(this);
+      const message = form.find('input[name="message"]').val();
+      const receiver = form.find('input[name="receiver"]').val();
+
+      $.post(form.attr('action'), form.serialize(), function() {
+        const msgHtml = `
+          <div class="chat-msg"><strong>admin:</strong> ${$('<div>').text(message).html()}</div>
+        `;
+        $('#chat-box').append(msgHtml);
+        $('#chat-box').scrollTop($('#chat-box')[0].scrollHeight);
+        form[0].reset();
+      }).fail(function() {
+        alert("❌ Failed to send message.");
+      });
+    });
+  </script>
 </body>
 </html>
