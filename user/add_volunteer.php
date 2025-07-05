@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="mb-3">
       <label>Upload Photo</label>
-      <input type="file" name="photo" class="form-control" accept="assets/images/volunteer/*" required>
+      <input type="file" name="photo" class="form-control" accept="assets/images/" required>
     </div>
 
     <button type="submit" class="btn btn-success w-100">Submit for Approval</button>

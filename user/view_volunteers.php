@@ -25,7 +25,7 @@ if (!$volunteer) {
 // Setup variables
 $fullName = $volunteer['full_name'] ?? $volunteer['username'];
 $photoFile = $volunteer['photo'] ?? 'default.jpg';
-$photoPath = "/ReliefLink/assets/images/volunteers/" . basename($photoFile);
+$photoPath = "/ReliefLink/assets/images//" . basename($photoFile);
 ?>
 <!DOCTYPE html>
 <html lang="en">

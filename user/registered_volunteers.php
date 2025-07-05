@@ -56,7 +56,7 @@ $result = $conn->query("SELECT * FROM users WHERE role = 'volunteer'");
     <div class="row g-4">
       <?php while ($row = $result->fetch_assoc()):
         $photoFile = $row['photo'] ?? 'default.jpg';
-        $photoPath = "/ReliefLink/assets/images/volunteers/" . basename($photoFile);
+        $photoPath = "/ReliefLink/assets/images/" . basename($photoFile);
         $name = $row['full_name'] ?? $row['username'];
         $username = htmlspecialchars($row['username']);
       ?>
